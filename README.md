@@ -1,4 +1,4 @@
-# OpenWWeatherMap-HTML-Arduino
+# OpenWWeatherMap-HTML-Arduino (One Call - API)
 Open Weather One Call API to HTML Dashboard and ESP32 App
 
 Checkout video description of this model at:
@@ -13,6 +13,8 @@ How I generated , this long code with ease, will also be available at Channel, i
 3) HTML RAW DATA Display: Use your API Key at Line Number 817
     const da_url = "https://api.openweathermap.org/data/3.0/onecall?lat=33.6844&lon=73.0479&appid=abcd&units=metric";
 
-3) INO File is Arduino model for ESP32 - You will need to install relevant  libraries.
+3) For Arduino/ESP32/INO File: Changes need to be done on Lines 10, 11 & 13 for Wifi Name, Wifi Password & API Key.
+
+
 
 This is my first GIT project, Hope not to make a mess out of it.
