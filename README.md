@@ -14,3 +14,5 @@ How I generated , this long code with ease, will also be available at Channel, i
     const da_url = "https://api.openweathermap.org/data/3.0/onecall?lat=33.6844&lon=73.0479&appid=abcd&units=metric";
 
 3) INO File is Arduino model for ESP32 - You will need to install relevant  libraries.
+
+This is my first GIT project, Hope not to make a mess out of it.
