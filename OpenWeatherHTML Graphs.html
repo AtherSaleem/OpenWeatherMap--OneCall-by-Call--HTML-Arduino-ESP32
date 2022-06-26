@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html>
+  <title>Open Weather Report</title>
+<head>
+    <style>
+body{background-color: #fdfdec;}
+table, th, td {
+  border: 1px solid black;
+  text-align: center;
+  font-size: 20px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+th {color: blue;}
+.container {
+  display: flex;
+  width: 90%;
+  
+}
+    #DailyForecast{}
+    #RawData{}
+    #MinRainData{}
+    #ThisDayData{}
+    #CurrentData{}
+  
+.chart1 {
+  width: 90%;
+  max-width: 1920px;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){$("OptionsButton").click(function(){$("myOptions").toggle();}); });
+  $(document).ready(function(){$("DailyForecastBtn").click(function(){$("DailyForecast").toggle();}); });
+  $(document).ready(function(){$("RawDataBtn").click(function(){$("RawData").toggle();}); });
+  $(document).ready(function(){$("MinRainDataBtn").click(function(){$("MinRainData").toggle();}); });
+  $(document).ready(function(){$("ThisDayDataBtn").click(function(){$("ThisDayData").toggle();}); });
+  $(document).ready(function(){$("CurrentDataBtn").click(function(){$("CurrentData").toggle();}); });
+
+</script>
+
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+<body onload="daStarter()">
+  <center>
+    <div><input type="file" id="file-input" />
+        <button id="read-button">Read Configuration & Get Weather Data</button>
+        <pre id="file-contents"></pre></div>
+        
+<div><h1><p style="color:red">
+OpenWeatherMap 'OneCall API' (Items to Show/Hide)</p>
+<button><CurrentDataBtn>Current Weather</OptionsButton></button>
+<button><MinRainDataBtn>Rain - 60 Minutes</OptionsButton></button>
+<button><ThisDayDataBtn>24 - Hour</OptionsButton></button>
+<button><DailyForecastBtn>Daily Forecast</DailyForecastBtn></button>
+<button><RawDataBtn>Raw Data</RawDataBtn></button>
+</h1></div>
+
+
+<CurrentData>
+    <h1><p style="color:red">Current Weather</p></h1>
+    <table>
+      <th>Time</th><th>TimeZone</th><th>Time adjustment (Min)</th>
+        <tr><td><span id="curTime"></span></td><td><span id="TimeZone"></span></td><td><span id="TimeAdj"></span></td></tr>  
+      <th>Temperature</th><th>Feels Like</th><th>Humidity</th>
+        <tr><td><span id="curTemp"></span></td><td><span id="curFeelLike"></span></td><td><span id="curHumid"></span></td></tr>
+      <th>Wind Speed</th><th>Wind Gust</th><th>Wind Direction</th>
+        <tr><td><span id="curWindSpeed"></span></td><td><span id="curWindGust"></span></td><td><span id="curWindDirection"></span></td></tr>
+      <th>Cloud Cover %</th><th>Weather (Des)</th><th>Weather (Main)</th>
+        <tr><td><span id="curCloud"></span></td><td><span id="curWeaDes"></span></td><td><span id="curWeaMain"></span></td></tr>
+      <th>Visibility KM</th><th>Sunrise</th><th>Sunset</th>
+        <tr><td><span id="curVisi"></span></td><td><span id="curSunR"></span></td><td><span id="curSunS"></span></td></tr>
+      <th>UV Index</th><th>Air Pressure</th><th>Dew Point</th>
+        <tr><td><span id="curUV"></span></td><td><span id="curAirP"></span></td><td><span id="curDewP"></span></td></tr>
+    </table>      
+</CurrentData>
+
+<MinRainData>
+    <h1><p style="color:red">Rain - This Hour</p></h1>
+    <div class="container">
+      <div class="chart1"><canvas id="ThisHourRain"></canvas></div>
+    </div>
+</MinRainData>
+
+<ThisDayData>
+    <h1><p style="color:red">24 Hour Data</p></h1>
+    <div class="container">
+        <div class="chart1"><canvas id="hourlyTemp"></canvas></div>
+    </div>
+<br>
+<table style="width:600px">
+<th>Hour</th><th>Description</th><th>Main</th>
+<tr><td><span id="hour0"></span></td><td><span id="hourly0description"></span></td><td><span id="hourly0main"></span></td></tr>
+<tr><td><span id="hour1"></span></td><td><span id="hourly1description"></span></td><td><span id="hourly1main"></span></td></tr>
+<tr><td><span id="hour2"></span></td><td><span id="hourly2description"></span></td><td><span id="hourly2main"></span></td></tr>
+<tr><td><span id="hour3"></span></td><td><span id="hourly3description"></span></td><td><span id="hourly3main"></span></td></tr>
+<tr><td><span id="hour4"></span></td><td><span id="hourly4description"></span></td><td><span id="hourly4main"></span></td></tr>
+<tr><td><span id="hour5"></span></td><td><span id="hourly5description"></span></td><td><span id="hourly5main"></span></td></tr>
+<tr><td><span id="hour6"></span></td><td><span id="hourly6description"></span></td><td><span id="hourly6main"></span></td></tr>
+<tr><td><span id="hour7"></span></td><td><span id="hourly7description"></span></td><td><span id="hourly7main"></span></td></tr>
+<tr><td><span id="hour8"></span></td><td><span id="hourly8description"></span></td><td><span id="hourly8main"></span></td></tr>
+<tr><td><span id="hour9"></span></td><td><span id="hourly9description"></span></td><td><span id="hourly9main"></span></td></tr>
+<tr><td><span id="hour10"></span></td><td><span id="hourly10description"></span></td><td><span id="hourly10main"></span></td></tr>
+<tr><td><span id="hour11"></span></td><td><span id="hourly11description"></span></td><td><span id="hourly11main"></span></td></tr>
+<tr><td><span id="hour12"></span></td><td><span id="hourly12description"></span></td><td><span id="hourly12main"></span></td></tr>
+<tr><td><span id="hour13"></span></td><td><span id="hourly13description"></span></td><td><span id="hourly13main"></span></td></tr>
+<tr><td><span id="hour14"></span></td><td><span id="hourly14description"></span></td><td><span id="hourly14main"></span></td></tr>
+<tr><td><span id="hour15"></span></td><td><span id="hourly15description"></span></td><td><span id="hourly15main"></span></td></tr>
+<tr><td><span id="hour16"></span></td><td><span id="hourly16description"></span></td><td><span id="hourly16main"></span></td></tr>
+<tr><td><span id="hour17"></span></td><td><span id="hourly17description"></span></td><td><span id="hourly17main"></span></td></tr>
+<tr><td><span id="hour18"></span></td><td><span id="hourly18description"></span></td><td><span id="hourly18main"></span></td></tr>
+<tr><td><span id="hour19"></span></td><td><span id="hourly19description"></span></td><td><span id="hourly19main"></span></td></tr>
+<tr><td><span id="hour20"></span></td><td><span id="hourly20description"></span></td><td><span id="hourly20main"></span></td></tr>
+<tr><td><span id="hour21"></span></td><td><span id="hourly21description"></span></td><td><span id="hourly21main"></span></td></tr>
+<tr><td><span id="hour22"></span></td><td><span id="hourly22description"></span></td><td><span id="hourly22main"></span></td></tr>
+<tr><td><span id="hour23"></span></td><td><span id="hourly23description"></span></td><td><span id="hourly23main"></span></td></tr>
+</table>
+        
+        
+</ThisDayData>
+
+<DailyForecast>
+<h1><p style="color:red">Daily Forecast</p></h1>
+  
+<div class="container">
+    <div class="chart1"><canvas id="dailyTemp"></canvas></div>
+    <div class="chart1"><canvas id="planertary"></canvas></div>
+</div>
+<div class="container">
+  <div class="chart1"><canvas id="humidother"></canvas></div>
+  <div class="chart1"><canvas id="dailyWind"></canvas></div>
+</div><br><br>
+    
+<table style="width:600px">
+  <th> Date <th> Weather <th> Status </th></th></th>
+  <tr>
+    <td><span id="myDay1a"></span></td>
+    <td><span id="daily0weather0descriptiona"></span></td>
+    <td><span id="daily0weather0maina"></span></td>
+  </tr>
+  <tr>
+    <td><span id="myDay2a"></span></td>
+    <td><span id="daily1weather0descriptiona"></span></td>
+    <td><span id="daily1weather0maina"></span></td>
+  </tr>
+  <tr>
+    <td><span id="myDay3a"></span></td>
+    <td><span id="daily2weather0descriptiona"></span></td>
+    <td><span id="daily2weather0maina"></span></td>
+  </tr>
+  <tr>
+    <td><span id="myDay4a"></span></td>
+    <td><span id="daily3weather0descriptiona"></span></td>
+    <td><span id="daily3weather0maina"></span></td>
+  </tr>
+  <tr>
+    <td><span id="myDay5a"></span></td>
+    <td><span id="daily4weather0descriptiona"></span></td>
+    <td><span id="daily4weather0maina"></span></td>
+  </tr>
+  <tr>
+    <td><span id="myDay6a"></span></td>
+    <td><span id="daily5weather0descriptiona"></span></td>
+    <td><span id="daily5weather0maina"></span></td>
+  </tr><tr>
+    <td><span id="myDay7a"></span></td>
+    <td><span id="daily6weather0descriptiona"></span></td>
+    <td><span id="daily6weather0maina"></span></td>
+  </tr>
+</tr><tr>
+  <td><span id="myDay8a"></span></td>
+  <td><span id="daily7weather0descriptiona"></span></td>
+  <td><span id="daily7weather0maina"></span></td>
+</tr>
+</table>
+<br><br><br></DailyForecast>
+
+   
+<script>
+  function daStarter(){
+    daText = '{"lati":"33.6844", "longi":"73.0479", "apiKey":"abcd"}'
+  
+  fetchData();
+}
+
+var daText;
+	document.querySelector("#read-button").addEventListener('click', function() {
+		let file = document.querySelector("#file-input").files[0];
+            let reader = new FileReader();
+		        reader.addEventListener('load', function(e) {
+	    		    let text = e.target.result;
+                    daText = text;
+	    		        //document.querySelector("#file-contents").textContent = text;
+                            fetchData();
+		        });
+		reader.readAsText(file);
+	});
+
+
+var obj;
+
+async function fetchData() {
+    obj2 = JSON.parse(daText);
+        da_url = "https://api.openweathermap.org/data/3.0/onecall?lat=" + obj2.lati + "&lon=" + obj2.longi + "&appid=" + obj2.apiKey + "&units=metric";
+            const response = await fetch(da_url);
+                obj = await response.json();
+                    //console.log(obj);  
+
+
+
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+var myDate = new Date(obj.current.dt * 1000);
+myMonth = monthNames[myDate.getMonth()];
+
+const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri",
+  "Sat"];
+var myDay = dayNames[myDate.getDay()];
+
+
+
+
+myDate = new Date(obj.daily[0].dt * 1000);myMonth = monthNames[myDate.getMonth()];myMonDat = myDate.getDate();myDay = dayNames[myDate.getDay()];var myDay1 = myMonth + " " + myMonDat + "(" + myDay + ")";
+myDate = new Date(obj.daily[1].dt * 1000);myMonth = monthNames[myDate.getMonth()];myMonDat = myDate.getDate();myDay = dayNames[myDate.getDay()];var myDay2 = myMonth + " " + myMonDat + "(" + myDay + ")";
+myDate = new Date(obj.daily[2].dt * 1000);myMonth = monthNames[myDate.getMonth()];myMonDat = myDate.getDate();myDay = dayNames[myDate.getDay()];var myDay3 = myMonth + " " + myMonDat + "(" + myDay + ")";
+myDate = new Date(obj.daily[3].dt * 1000);myMonth = monthNames[myDate.getMonth()];myMonDat = myDate.getDate();myDay = dayNames[myDate.getDay()];var myDay4 = myMonth + " " + myMonDat + "(" + myDay + ")";
+myDate = new Date(obj.daily[4].dt * 1000);myMonth = monthNames[myDate.getMonth()];myMonDat = myDate.getDate();myDay = dayNames[myDate.getDay()];var myDay5 = myMonth + " " + myMonDat + "(" + myDay + ")";
+myDate = new Date(obj.daily[5].dt * 1000);myMonth = monthNames[myDate.getMonth()];myMonDat = myDate.getDate();myDay = dayNames[myDate.getDay()];var myDay6 = myMonth + " " + myMonDat + "(" + myDay + ")";
+myDate = new Date(obj.daily[6].dt * 1000);myMonth = monthNames[myDate.getMonth()];myMonDat = myDate.getDate();myDay = dayNames[myDate.getDay()];var myDay7 = myMonth + " " + myMonDat + "(" + myDay + ")";
+myDate = new Date(obj.daily[7].dt * 1000);myMonth = monthNames[myDate.getMonth()];myMonDat = myDate.getDate();myDay = dayNames[myDate.getDay()];var myDay8 = myMonth + " " + myMonDat + "(" + myDay + ")";
+
+var xValues = [myDay1, myDay2, myDay3, myDay4, myDay5, myDay6, myDay7, myDay8];
+
+myNewHour = new Date(obj.hourly[0].dt * 1000);var hour0 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[1].dt * 1000);var hour1 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[2].dt * 1000);var hour2 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[3].dt * 1000);var hour3 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[4].dt * 1000);var hour4 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[5].dt * 1000);var hour5 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[6].dt * 1000);var hour6 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[7].dt * 1000);var hour7 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[8].dt * 1000);var hour8 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[9].dt * 1000);var hour9 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[10].dt * 1000);var hour10 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[11].dt * 1000);var hour11 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[12].dt * 1000);var hour12 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[13].dt * 1000);var hour13 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[14].dt * 1000);var hour14 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[15].dt * 1000);var hour15 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[16].dt * 1000);var hour16 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[17].dt * 1000);var hour17 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[18].dt * 1000);var hour18 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[19].dt * 1000);var hour19 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[20].dt * 1000);var hour20 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[21].dt * 1000);var hour21 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[22].dt * 1000);var hour22 = myNewHour.getHours();
+myNewHour = new Date(obj.hourly[23].dt * 1000);var hour23 = myNewHour.getHours();
+
+var xDaData = [hour0, hour1, hour2, hour3, hour4, hour5, hour6, hour7, hour8, hour9, hour10, hour11, hour12, hour13, hour14, hour15, hour16, hour17, hour18, hour19, hour20, hour21, hour22, hour23]
+
+new Chart("hourlyTemp", {
+  type: "line",
+  data: {
+    labels: xDaData,
+    datasets: [{ 
+        data: [obj.hourly[0].temp,obj.hourly[1].temp,obj.hourly[2].temp,obj.hourly[3].temp,obj.hourly[4].temp,obj.hourly[5].temp,obj.hourly[6].temp,obj.hourly[7].temp,obj.hourly[8].temp,obj.hourly[9].temp,obj.hourly[10].temp,obj.hourly[11].temp,obj.hourly[12].temp,obj.hourly[13].temp,obj.hourly[14].temp,obj.hourly[15].temp,obj.hourly[16].temp,obj.hourly[17].temp,obj.hourly[18].temp,obj.hourly[19].temp,obj.hourly[20].temp,obj.hourly[21].temp,obj.hourly[22].temp,obj.hourly[23].temp],
+        borderColor: "red",
+        fill: false,
+        label: "Temp",
+   }, { 
+        data: [obj.hourly[0].feels_like,obj.hourly[1].feels_like,obj.hourly[2].feels_like,obj.hourly[3].feels_like,obj.hourly[4].feels_like,obj.hourly[5].feels_like,obj.hourly[6].feels_like,obj.hourly[7].feels_like,obj.hourly[8].feels_like,obj.hourly[9].feels_like,obj.hourly[10].feels_like,obj.hourly[11].feels_like,obj.hourly[12].feels_like,obj.hourly[13].feels_like,obj.hourly[14].feels_like,obj.hourly[15].feels_like,obj.hourly[16].feels_like,obj.hourly[17].feels_like,obj.hourly[18].feels_like,obj.hourly[19].feels_like,obj.hourly[20].feels_like,obj.hourly[21].feels_like,obj.hourly[22].feels_like,obj.hourly[23].feels_like],
+      borderColor: "purple",
+      label: "Feels Like",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].wind_speed,obj.hourly[1].wind_speed,obj.hourly[2].wind_speed,obj.hourly[3].wind_speed,obj.hourly[4].wind_speed,obj.hourly[5].wind_speed,obj.hourly[6].wind_speed,obj.hourly[7].wind_speed,obj.hourly[8].wind_speed,obj.hourly[9].wind_speed,obj.hourly[10].wind_speed,obj.hourly[11].wind_speed,obj.hourly[12].wind_speed,obj.hourly[13].wind_speed,obj.hourly[14].wind_speed,obj.hourly[15].wind_speed,obj.hourly[16].wind_speed,obj.hourly[17].wind_speed,obj.hourly[18].wind_speed,obj.hourly[19].wind_speed,obj.hourly[20].wind_speed,obj.hourly[21].wind_speed,obj.hourly[22].wind_speed,obj.hourly[23].wind_speed],
+      borderColor: "blue",
+      label: "Wind Speed",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].wind_gust,obj.hourly[1].wind_gust,obj.hourly[2].wind_gust,obj.hourly[3].wind_gust,obj.hourly[4].wind_gust,obj.hourly[5].wind_gust,obj.hourly[6].wind_gust,obj.hourly[7].wind_gust,obj.hourly[8].wind_gust,obj.hourly[9].wind_gust,obj.hourly[10].wind_gust,obj.hourly[11].wind_gust,obj.hourly[12].wind_gust,obj.hourly[13].wind_gust,obj.hourly[14].wind_gust,obj.hourly[15].wind_gust,obj.hourly[16].wind_gust,obj.hourly[17].wind_gust,obj.hourly[18].wind_gust,obj.hourly[19].wind_gust,obj.hourly[20].wind_gust,obj.hourly[21].wind_gust,obj.hourly[22].wind_gust,obj.hourly[23].wind_gust],
+      borderColor: "grey",
+      label: "Wind Gust",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].wind_deg/100,obj.hourly[1].wind_deg/100,obj.hourly[2].wind_deg/100,obj.hourly[3].wind_deg/100,obj.hourly[4].wind_deg/100,obj.hourly[5].wind_deg/100,obj.hourly[6].wind_deg/100,obj.hourly[7].wind_deg/100,obj.hourly[8].wind_deg/100,obj.hourly[9].wind_deg/100,obj.hourly[10].wind_deg/100,obj.hourly[11].wind_deg/100,obj.hourly[12].wind_deg/100,obj.hourly[13].wind_deg/100,obj.hourly[14].wind_deg/100,obj.hourly[15].wind_deg/100,obj.hourly[16].wind_deg/100,obj.hourly[17].wind_deg/100,obj.hourly[18].wind_deg/100,obj.hourly[19].wind_deg/100,obj.hourly[20].wind_deg/100,obj.hourly[21].wind_deg/100,obj.hourly[22].wind_deg/100,obj.hourly[23].wind_deg/100],
+      borderColor: "gold",
+      label: "Wind Degree/100",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].uvi,obj.hourly[1].uvi,obj.hourly[2].uvi,obj.hourly[3].uvi,obj.hourly[4].uvi,obj.hourly[5].uvi,obj.hourly[6].uvi,obj.hourly[7].uvi,obj.hourly[8].uvi,obj.hourly[9].uvi,obj.hourly[10].uvi,obj.hourly[11].uvi,obj.hourly[12].uvi,obj.hourly[13].uvi,obj.hourly[14].uvi,obj.hourly[15].uvi,obj.hourly[16].uvi,obj.hourly[17].uvi,obj.hourly[18].uvi,obj.hourly[19].uvi,obj.hourly[20].uvi,obj.hourly[21].uvi,obj.hourly[22].uvi,obj.hourly[23].uvi],
+      borderColor: "orange",
+      label: "UVI",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].pop*10,obj.hourly[1].pop*10,obj.hourly[2].pop*10,obj.hourly[3].pop*10,obj.hourly[4].pop*10,obj.hourly[5].pop*10,obj.hourly[6].pop*10,obj.hourly[7].pop*10,obj.hourly[8].pop*10,obj.hourly[9].pop*10,obj.hourly[10].pop*10,obj.hourly[11].pop*10,obj.hourly[12].pop*10,obj.hourly[13].pop*10,obj.hourly[14].pop*10,obj.hourly[15].pop*10,obj.hourly[16].pop*10,obj.hourly[17].pop*10,obj.hourly[18].pop*10,obj.hourly[19].pop*10,obj.hourly[20].pop*10,obj.hourly[21].pop*10,obj.hourly[22].pop*10,obj.hourly[23].pop*10],
+      borderColor: "lightgreen",
+      label: "Rain-Prb*10",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].clouds,obj.hourly[1].clouds,obj.hourly[2].clouds,obj.hourly[3].clouds,obj.hourly[4].clouds,obj.hourly[5].clouds,obj.hourly[6].clouds,obj.hourly[7].clouds,obj.hourly[8].clouds,obj.hourly[9].clouds,obj.hourly[10].clouds,obj.hourly[11].clouds,obj.hourly[12].clouds,obj.hourly[13].clouds,obj.hourly[14].clouds,obj.hourly[15].clouds,obj.hourly[16].clouds,obj.hourly[17].clouds,obj.hourly[18].clouds,obj.hourly[19].clouds,obj.hourly[20].clouds,obj.hourly[21].clouds,obj.hourly[22].clouds,obj.hourly[23].clouds],
+      borderColor: "pink",
+      label: "Cloud %",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].humidity,obj.hourly[1].humidity,obj.hourly[2].humidity,obj.hourly[3].humidity,obj.hourly[4].humidity,obj.hourly[5].humidity,obj.hourly[6].humidity,obj.hourly[7].humidity,obj.hourly[8].humidity,obj.hourly[9].humidity,obj.hourly[10].humidity,obj.hourly[11].humidity,obj.hourly[12].humidity,obj.hourly[13].humidity,obj.hourly[14].humidity,obj.hourly[15].humidity,obj.hourly[16].humidity,obj.hourly[17].humidity,obj.hourly[18].humidity,obj.hourly[19].humidity,obj.hourly[20].humidity,obj.hourly[21].humidity,obj.hourly[22].humidity,obj.hourly[23].humidity],
+      borderColor: "black",
+      label: "Humidity",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].dew_point,obj.hourly[1].dew_point,obj.hourly[2].dew_point,obj.hourly[3].dew_point,obj.hourly[4].dew_point,obj.hourly[5].dew_point,obj.hourly[6].dew_point,obj.hourly[7].dew_point,obj.hourly[8].dew_point,obj.hourly[9].dew_point,obj.hourly[10].dew_point,obj.hourly[11].dew_point,obj.hourly[12].dew_point,obj.hourly[13].dew_point,obj.hourly[14].dew_point,obj.hourly[15].dew_point,obj.hourly[16].dew_point,obj.hourly[17].dew_point,obj.hourly[18].dew_point,obj.hourly[19].dew_point,obj.hourly[20].dew_point,obj.hourly[21].dew_point,obj.hourly[22].dew_point,obj.hourly[23].dew_point],
+      borderColor: "aqua",
+      label: "DewPoint",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].visibility/1000,obj.hourly[1].visibility/1000,obj.hourly[2].visibility/1000,obj.hourly[3].visibility/1000,obj.hourly[4].visibility/1000,obj.hourly[5].visibility/1000,obj.hourly[6].visibility/1000,obj.hourly[7].visibility/1000,obj.hourly[8].visibility/1000,obj.hourly[9].visibility/1000,obj.hourly[10].visibility/1000,obj.hourly[11].visibility/1000,obj.hourly[12].visibility/1000,obj.hourly[13].visibility/1000,obj.hourly[14].visibility/1000,obj.hourly[15].visibility/1000,obj.hourly[16].visibility/1000,obj.hourly[17].visibility/1000,obj.hourly[18].visibility/1000,obj.hourly[19].visibility/1000,obj.hourly[20].visibility/1000,obj.hourly[21].visibility/1000,obj.hourly[22].visibility/1000,obj.hourly[23].visibility/1000],
+      borderColor: "teal",
+      label: "Visibility KM",
+      fill: false
+    }, { 
+        data: [obj.hourly[0].pressure/100,obj.hourly[1].pressure/100,obj.hourly[2].pressure/100,obj.hourly[3].pressure/100,obj.hourly[4].pressure/100,obj.hourly[5].pressure/100,obj.hourly[6].pressure/100,obj.hourly[7].pressure/100,obj.hourly[8].pressure/100,obj.hourly[9].pressure/100,obj.hourly[10].pressure/100,obj.hourly[11].pressure/100,obj.hourly[12].pressure/100,obj.hourly[13].pressure/100,obj.hourly[14].pressure/100,obj.hourly[15].pressure/100,obj.hourly[16].pressure/100,obj.hourly[17].pressure/100,obj.hourly[18].pressure/100,obj.hourly[19].pressure/100,obj.hourly[20].pressure/100,obj.hourly[21].pressure/100,obj.hourly[22].pressure/100,obj.hourly[23].pressure/100],
+      borderColor: "tan",
+      label: "AirPressure",
+      fill: false
+    }
+  ]
+  },
+  options: {
+    legend: {display: true},
+    //title: {display: true, text: "Daily Forecast"}
+  }
+}); //hourlyTemp Chart Ends
+
+document.getElementById("hour0").innerHTML = hour0;
+document.getElementById("hour1").innerHTML = hour1;
+document.getElementById("hour2").innerHTML = hour2;
+document.getElementById("hour3").innerHTML = hour3;
+document.getElementById("hour4").innerHTML = hour4;
+document.getElementById("hour5").innerHTML = hour5;
+document.getElementById("hour6").innerHTML = hour6;
+document.getElementById("hour7").innerHTML = hour7;
+document.getElementById("hour8").innerHTML = hour8;
+document.getElementById("hour9").innerHTML = hour9;
+document.getElementById("hour10").innerHTML = hour10;
+document.getElementById("hour11").innerHTML = hour11;
+document.getElementById("hour12").innerHTML = hour12;
+document.getElementById("hour13").innerHTML = hour13;
+document.getElementById("hour14").innerHTML = hour14;
+document.getElementById("hour15").innerHTML = hour15;
+document.getElementById("hour16").innerHTML = hour16;
+document.getElementById("hour17").innerHTML = hour17;
+document.getElementById("hour18").innerHTML = hour18;
+document.getElementById("hour19").innerHTML = hour19;
+document.getElementById("hour20").innerHTML = hour20;
+document.getElementById("hour21").innerHTML = hour21;
+document.getElementById("hour22").innerHTML = hour22;
+document.getElementById("hour23").innerHTML = hour23;
+
+document.getElementById("hourly0description").innerHTML = obj.hourly[0].weather[0].description;
+document.getElementById("hourly1description").innerHTML = obj.hourly[1].weather[0].description;
+document.getElementById("hourly2description").innerHTML = obj.hourly[2].weather[0].description;
+document.getElementById("hourly3description").innerHTML = obj.hourly[3].weather[0].description;
+document.getElementById("hourly4description").innerHTML = obj.hourly[4].weather[0].description;
+document.getElementById("hourly5description").innerHTML = obj.hourly[5].weather[0].description;
+document.getElementById("hourly6description").innerHTML = obj.hourly[6].weather[0].description;
+document.getElementById("hourly7description").innerHTML = obj.hourly[7].weather[0].description;
+document.getElementById("hourly8description").innerHTML = obj.hourly[8].weather[0].description;
+document.getElementById("hourly9description").innerHTML = obj.hourly[9].weather[0].description;
+document.getElementById("hourly10description").innerHTML = obj.hourly[10].weather[0].description;
+document.getElementById("hourly11description").innerHTML = obj.hourly[11].weather[0].description;
+document.getElementById("hourly12description").innerHTML = obj.hourly[12].weather[0].description;
+document.getElementById("hourly13description").innerHTML = obj.hourly[13].weather[0].description;
+document.getElementById("hourly14description").innerHTML = obj.hourly[14].weather[0].description;
+document.getElementById("hourly15description").innerHTML = obj.hourly[15].weather[0].description;
+document.getElementById("hourly16description").innerHTML = obj.hourly[16].weather[0].description;
+document.getElementById("hourly17description").innerHTML = obj.hourly[17].weather[0].description;
+document.getElementById("hourly18description").innerHTML = obj.hourly[18].weather[0].description;
+document.getElementById("hourly19description").innerHTML = obj.hourly[19].weather[0].description;
+document.getElementById("hourly20description").innerHTML = obj.hourly[20].weather[0].description;
+document.getElementById("hourly21description").innerHTML = obj.hourly[21].weather[0].description;
+document.getElementById("hourly22description").innerHTML = obj.hourly[22].weather[0].description;
+document.getElementById("hourly23description").innerHTML = obj.hourly[23].weather[0].description;
+
+document.getElementById("hourly0main").innerHTML = obj.hourly[0].weather[0].main;
+document.getElementById("hourly1main").innerHTML = obj.hourly[1].weather[0].main;
+document.getElementById("hourly2main").innerHTML = obj.hourly[2].weather[0].main;
+document.getElementById("hourly3main").innerHTML = obj.hourly[3].weather[0].main;
+document.getElementById("hourly4main").innerHTML = obj.hourly[4].weather[0].main;
+document.getElementById("hourly5main").innerHTML = obj.hourly[5].weather[0].main;
+document.getElementById("hourly6main").innerHTML = obj.hourly[6].weather[0].main;
+document.getElementById("hourly7main").innerHTML = obj.hourly[7].weather[0].main;
+document.getElementById("hourly8main").innerHTML = obj.hourly[8].weather[0].main;
+document.getElementById("hourly9main").innerHTML = obj.hourly[9].weather[0].main;
+document.getElementById("hourly10main").innerHTML = obj.hourly[10].weather[0].main;
+document.getElementById("hourly11main").innerHTML = obj.hourly[11].weather[0].main;
+document.getElementById("hourly12main").innerHTML = obj.hourly[12].weather[0].main;
+document.getElementById("hourly13main").innerHTML = obj.hourly[13].weather[0].main;
+document.getElementById("hourly14main").innerHTML = obj.hourly[14].weather[0].main;
+document.getElementById("hourly15main").innerHTML = obj.hourly[15].weather[0].main;
+document.getElementById("hourly16main").innerHTML = obj.hourly[16].weather[0].main;
+document.getElementById("hourly17main").innerHTML = obj.hourly[17].weather[0].main;
+document.getElementById("hourly18main").innerHTML = obj.hourly[18].weather[0].main;
+document.getElementById("hourly19main").innerHTML = obj.hourly[19].weather[0].main;
+document.getElementById("hourly20main").innerHTML = obj.hourly[20].weather[0].main;
+document.getElementById("hourly21main").innerHTML = obj.hourly[21].weather[0].main;
+document.getElementById("hourly22main").innerHTML = obj.hourly[22].weather[0].main;
+document.getElementById("hourly23main").innerHTML = obj.hourly[23].weather[0].main;
+
+
+//For Daily Table
+document.getElementById("myDay1a").innerHTML = myDay1;
+document.getElementById("myDay2a").innerHTML = myDay2;
+document.getElementById("myDay3a").innerHTML = myDay3;
+document.getElementById("myDay4a").innerHTML = myDay4;
+document.getElementById("myDay5a").innerHTML = myDay5;
+document.getElementById("myDay6a").innerHTML = myDay6;
+document.getElementById("myDay7a").innerHTML = myDay7;
+document.getElementById("myDay8a").innerHTML = myDay8;
+
+document.getElementById("daily0weather0descriptiona").innerHTML = obj.daily[0].weather[0].description;
+document.getElementById("daily1weather0descriptiona").innerHTML = obj.daily[1].weather[0].description;
+document.getElementById("daily2weather0descriptiona").innerHTML = obj.daily[2].weather[0].description;
+document.getElementById("daily3weather0descriptiona").innerHTML = obj.daily[3].weather[0].description;
+document.getElementById("daily4weather0descriptiona").innerHTML = obj.daily[4].weather[0].description;
+document.getElementById("daily5weather0descriptiona").innerHTML = obj.daily[5].weather[0].description;
+document.getElementById("daily6weather0descriptiona").innerHTML = obj.daily[6].weather[0].description;
+document.getElementById("daily7weather0descriptiona").innerHTML = obj.daily[7].weather[0].description;
+
+document.getElementById("daily0weather0maina").innerHTML = obj.daily[0].weather[0].main;
+document.getElementById("daily1weather0maina").innerHTML = obj.daily[1].weather[0].main;
+document.getElementById("daily2weather0maina").innerHTML = obj.daily[2].weather[0].main;
+document.getElementById("daily3weather0maina").innerHTML = obj.daily[3].weather[0].main;
+document.getElementById("daily4weather0maina").innerHTML = obj.daily[4].weather[0].main;
+document.getElementById("daily5weather0maina").innerHTML = obj.daily[5].weather[0].main;
+document.getElementById("daily6weather0maina").innerHTML = obj.daily[6].weather[0].main;
+document.getElementById("daily7weather0maina").innerHTML = obj.daily[7].weather[0].main;
+
+
+
+document.getElementById("curTime").innerHTML = new Date(obj.current.dt * 1000);
+document.getElementById("TimeZone").innerHTML = obj.timezone;
+document.getElementById("TimeAdj").innerHTML = obj.timezone_offset/60;
+document.getElementById("curTemp").innerHTML = obj.current.temp;
+document.getElementById("curFeelLike").innerHTML = obj.current.feels_like;
+document.getElementById("curHumid").innerHTML = obj.current.humidity;
+document.getElementById("curWindSpeed").innerHTML = obj.current.wind_speed;
+document.getElementById("curWindGust").innerHTML = obj.current.wind_gust;
+document.getElementById("curWindDirection").innerHTML = obj.current.wind_deg;
+document.getElementById("curCloud").innerHTML = obj.current.clouds;
+document.getElementById("curWeaDes").innerHTML = obj.current.weather[0].description;
+document.getElementById("curWeaMain").innerHTML = obj.current.weather[0].main;
+document.getElementById("curVisi").innerHTML = obj.current.visibility/1000;
+document.getElementById("curSunR").innerHTML = new Date(obj.current.sunrise * 1000);
+document.getElementById("curSunS").innerHTML = new Date(obj.current.sunset * 1000);
+document.getElementById("curUV").innerHTML = obj.current.uvi;
+document.getElementById("curAirP").innerHTML = obj.current.pressure;
+document.getElementById("curDewP").innerHTML = obj.current.dew_point;
+
+
+myNewMin = new Date(obj.minutely[0].dt * 1000);var min0 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[1].dt * 1000);var min1 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[2].dt * 1000);var min2 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[3].dt * 1000);var min3 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[4].dt * 1000);var min4 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[5].dt * 1000);var min5 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[6].dt * 1000);var min6 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[7].dt * 1000);var min7 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[8].dt * 1000);var min8 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[9].dt * 1000);var min9 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[10].dt * 1000);var min10 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[11].dt * 1000);var min11 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[12].dt * 1000);var min12 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[13].dt * 1000);var min13 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[14].dt * 1000);var min14 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[15].dt * 1000);var min15 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[16].dt * 1000);var min16 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[17].dt * 1000);var min17 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[18].dt * 1000);var min18 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[19].dt * 1000);var min19 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[20].dt * 1000);var min20 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[21].dt * 1000);var min21 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[22].dt * 1000);var min22 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[23].dt * 1000);var min23 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[24].dt * 1000);var min24 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[25].dt * 1000);var min25 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[26].dt * 1000);var min26 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[27].dt * 1000);var min27 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[28].dt * 1000);var min28 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[29].dt * 1000);var min29 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[30].dt * 1000);var min30 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[31].dt * 1000);var min31 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[32].dt * 1000);var min32 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[33].dt * 1000);var min33 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[34].dt * 1000);var min34 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[35].dt * 1000);var min35 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[36].dt * 1000);var min36 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[37].dt * 1000);var min37 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[38].dt * 1000);var min38 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[39].dt * 1000);var min39 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[40].dt * 1000);var min40 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[41].dt * 1000);var min41 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[42].dt * 1000);var min42 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[43].dt * 1000);var min43 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[44].dt * 1000);var min44 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[45].dt * 1000);var min45 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[46].dt * 1000);var min46 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[47].dt * 1000);var min47 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[48].dt * 1000);var min48 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[49].dt * 1000);var min49 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[50].dt * 1000);var min50 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[51].dt * 1000);var min51 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[52].dt * 1000);var min52 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[53].dt * 1000);var min53 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[54].dt * 1000);var min54 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[55].dt * 1000);var min55 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[56].dt * 1000);var min56 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[57].dt * 1000);var min57 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[58].dt * 1000);var min58 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[59].dt * 1000);var min59 = myNewMin.getMinutes();
+myNewMin = new Date(obj.minutely[60].dt * 1000);var min60 = myNewMin.getMinutes();
+var xMinuts = [min0, min1, min2, min3, min4, min5, min6, min7, min8, min9, min10, min11, min12, min13, min14, min15, min16, min17, min18, min19, min20, min21, min22, min23, min24, min25, min26, min27, min28, min29, min30, min31, min32, min33, min34, min35, min36, min37, min38, min39, min40, min41, min42, min43, min44, min45, min46, min47, min48, min49, min50, min51, min52, min53, min54, min55, min56, min57, min58, min59, min60];
+
+
+new Chart("ThisHourRain", {
+  type: "line",
+  data: {
+    labels: xMinuts,
+    datasets: [{ 
+      data: [obj.minutely[0].precipitation,obj.minutely[1].precipitation,obj.minutely[2].precipitation,obj.minutely[3].precipitation,obj.minutely[4].precipitation,obj.minutely[5].precipitation,obj.minutely[6].precipitation,obj.minutely[7].precipitation,obj.minutely[8].precipitation,obj.minutely[9].precipitation,obj.minutely[10].precipitation,obj.minutely[11].precipitation,obj.minutely[12].precipitation,obj.minutely[13].precipitation,obj.minutely[14].precipitation,obj.minutely[15].precipitation,obj.minutely[16].precipitation,obj.minutely[17].precipitation,obj.minutely[18].precipitation,obj.minutely[19].precipitation,obj.minutely[20].precipitation,obj.minutely[21].precipitation,obj.minutely[22].precipitation,obj.minutely[23].precipitation,obj.minutely[24].precipitation,obj.minutely[25].precipitation,obj.minutely[26].precipitation,obj.minutely[27].precipitation,obj.minutely[28].precipitation,obj.minutely[29].precipitation,obj.minutely[30].precipitation,obj.minutely[31].precipitation,obj.minutely[32].precipitation,obj.minutely[33].precipitation,obj.minutely[34].precipitation,obj.minutely[35].precipitation,obj.minutely[36].precipitation,obj.minutely[37].precipitation,obj.minutely[38].precipitation,obj.minutely[39].precipitation,obj.minutely[40].precipitation,obj.minutely[41].precipitation,obj.minutely[42].precipitation,obj.minutely[43].precipitation,obj.minutely[44].precipitation,obj.minutely[45].precipitation,obj.minutely[46].precipitation,obj.minutely[47].precipitation,obj.minutely[48].precipitation,obj.minutely[49].precipitation,obj.minutely[50].precipitation,obj.minutely[51].precipitation,obj.minutely[52].precipitation,obj.minutely[53].precipitation,obj.minutely[54].precipitation,obj.minutely[55].precipitation,obj.minutely[56].precipitation,obj.minutely[57].precipitation,obj.minutely[58].precipitation,obj.minutely[59].precipitation,obj.minutely[60].precipitation,],
+      borderColor: "aqua",
+      fill: false,
+      label: "Minute by Minute Rain Forecast",
+    }
+  ]
+  },
+  options: {
+    legend: {display: true},
+    //title: {display: true, text: "Daily Forecast"}
+  }
+});
+
+
+new Chart("humidother", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: [{ 
+      data: [obj.daily[0].humidity,obj.daily[1].humidity,obj.daily[2].humidity,obj.daily[3].humidity,obj.daily[4].humidity,obj.daily[5].humidity,obj.daily[6].humidity,obj.daily[7].humidity],
+      borderColor: "red",
+      fill: false,
+      label: "Humidity",
+    
+    }, { 
+      data: [obj.daily[0].dew_point,obj.daily[1].dew_point,obj.daily[2].dew_point,obj.daily[3].dew_point,obj.daily[4].dew_point,obj.daily[5].dew_point,obj.daily[6].dew_point,obj.daily[7].dew_point],
+      borderColor: "green",
+      label: "Dew Point",
+      fill: false
+    }, { 
+      data: [obj.daily[0].pop*100,obj.daily[1].pop*100,obj.daily[2].pop*100,obj.daily[3].pop*100,obj.daily[4].pop*100,obj.daily[5].pop,obj.daily[6].pop,obj.daily[7].pop],
+      borderColor: "blue",
+      label: "Probability of Rain",
+      fill: false
+    }, { 
+      data: [obj.daily[0].clouds,obj.daily[1].clouds,obj.daily[2].clouds,obj.daily[3].clouds,obj.daily[4].clouds,obj.daily[5].clouds,obj.daily[6].clouds,obj.daily[7].clouds],
+      borderColor: "grey",
+      label: "Cloud Cover",
+      fill: false
+    }
+  ]
+  },
+  options: {
+    legend: {display: true},
+    //title: {display: true, text: "Daily Forecast"}
+  }
+});
+
+
+new Chart("dailyWind", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: [{ 
+      data: [obj.daily[0].wind_speed,obj.daily[1].wind_speed,obj.daily[2].wind_speed,obj.daily[3].wind_speed,obj.daily[4].wind_speed,obj.daily[5].wind_speed,obj.daily[6].wind_speed,obj.daily[7].wind_speed],
+      borderColor: "green",
+      label: "Wind Speed",
+      fill: false
+    }, { 
+      data: [obj.daily[0].wind_gust,obj.daily[1].wind_gust,obj.daily[2].wind_gust,obj.daily[3].wind_gust,obj.daily[4].wind_gust,obj.daily[5].wind_gust,obj.daily[6].wind_gust,obj.daily[7].wind_gust],
+      borderColor: "blue",
+      label: "Wind Gust",
+      fill: false
+    },{ 
+      data: [(obj.daily[0].wind_deg)/100,(obj.daily[1].wind_deg)/100,(obj.daily[2].wind_deg)/100,(obj.daily[3].wind_deg)/100,(obj.daily[4].wind_deg)/100,(obj.daily[5].wind_deg)/100,(obj.daily[6].wind_deg)/100,(obj.daily[7].wind_deg)/100],
+      borderColor: "black",
+      label: "Wind Degree/100",
+      fill: false
+    },{ 
+      data: [obj.daily[0].uvi,obj.daily[1].uvi,obj.daily[2].uvi,obj.daily[3].uvi,obj.daily[4].uvi,obj.daily[5].uvi,obj.daily[6].uvi,obj.daily[7].uvi],
+      borderColor: "red",
+      label: "UVI",
+      fill: false
+    }
+  ]
+  },
+  options: {
+    legend: {display: true},
+   // title: {display: true, text: "Daily Forecast"}
+  }
+});
+
+
+
+new Chart("dailyTemp", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: [{ 
+        data: [obj.daily[0].temp.min,obj.daily[1].temp.min,obj.daily[2].temp.min,obj.daily[3].temp.min,
+      obj.daily[4].temp.min,obj.daily[5].temp.min,obj.daily[6].temp.min,obj.daily[7].temp.min],
+      borderColor: "green",
+      label: "Min",
+      fill: false
+    },{ 
+        data: [obj.daily[0].temp.max,obj.daily[1].temp.max,obj.daily[2].temp.max,obj.daily[3].temp.max,
+      obj.daily[4].temp.max,obj.daily[5].temp.max,obj.daily[6].temp.max,obj.daily[7].temp.max],
+      borderColor: "red",
+      label: "Max",
+      fill: false
+    },{ 
+        data: [obj.daily[0].temp.morn,obj.daily[1].temp.morn,obj.daily[2].temp.morn,obj.daily[3].temp.morn,
+      obj.daily[4].temp.morn,obj.daily[5].temp.morn,obj.daily[6].temp.morn,obj.daily[7].temp.morn],
+    borderColor: "pink",
+      label: "Morning",
+      fill: false
+    },{ 
+      data: [obj.daily[0].temp.day,obj.daily[1].temp.day,obj.daily[2].temp.day,obj.daily[3].temp.day,
+      obj.daily[4].temp.day,obj.daily[5].temp.day,obj.daily[6].temp.day,obj.daily[7].temp.day],
+      borderColor: "blue",
+      label: "Day",
+      fill: false
+    },{ 
+        data: [obj.daily[0].temp.eve,obj.daily[1].temp.eve,obj.daily[2].temp.eve,obj.daily[3].temp.eve,
+      obj.daily[4].temp.eve,obj.daily[5].temp.eve,obj.daily[6].temp.eve,obj.daily[7].temp.eve],
+      borderColor: "brown",
+      label: "Evening",
+      fill: false
+    },{ 
+        data: [obj.daily[0].temp.night,obj.daily[1].temp.night,obj.daily[2].temp.night,obj.daily[3].temp.night,
+      obj.daily[4].temp.night,obj.daily[5].temp.night,obj.daily[6].temp.night,obj.daily[7].temp.night],
+      borderColor: "black",
+      label: "Night",
+      fill: false
+    },{ 
+      data:[obj.daily[0].feels_like.morn,obj.daily[1].feels_like.morn,obj.daily[2].feels_like.morn,obj.daily[3].feels_like.morn,
+      obj.daily[4].feels_like.morn,obj.daily[5].feels_like.morn,obj.daily[6].feels_like.morn,obj.daily[7].feels_like.morn],
+      borderColor: "purple",
+      label: "Feelslike Morning",
+      fill: false
+    },{ 
+      data:[obj.daily[0].feels_like.day,obj.daily[1].feels_like.day,obj.daily[2].feels_like.day,obj.daily[3].feels_like.day,
+      obj.daily[4].feels_like.day,obj.daily[5].feels_like.day,obj.daily[6].feels_like.day,obj.daily[7].feels_like.day],
+      borderColor: "Orange",
+      label: "Day",
+      fill: false
+    },{ 
+      data:[obj.daily[0].feels_like.eve,obj.daily[1].feels_like.eve,obj.daily[2].feels_like.eve,obj.daily[3].feels_like.eve,
+      obj.daily[4].feels_like.eve,obj.daily[5].feels_like.eve,obj.daily[6].feels_like.eve,obj.daily[7].feels_like.eve],
+      borderColor: "gold",
+      label: "Evening",
+      fill: false
+    },{ 
+      data:[obj.daily[0].feels_like.night,obj.daily[1].feels_like.night,obj.daily[2].feels_like.night,obj.daily[3].feels_like.night,
+      obj.daily[4].feels_like.night,obj.daily[5].feels_like.night,obj.daily[6].feels_like.night,obj.daily[7].feels_like.night],
+      borderColor: "Grey",
+      label: "Night",
+      fill: false
+    } 
+
+
+    ]
+  },
+  options: {
+    legend: {display: true},
+    title: {display: true, text: "Temperature"}
+  }
+});
+
+
+new Chart("planertary", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: [{ 
+        data: [new Date(obj.daily[0].sunrise * 1000).getHours() + (new Date(obj.daily[0].sunrise * 1000).getMinutes()/100), new Date(obj.daily[1].sunrise * 1000).getHours() + (new Date(obj.daily[1].sunrise * 1000).getMinutes()/100),
+        new Date(obj.daily[2].sunrise * 1000).getHours() + (new Date(obj.daily[2].sunrise * 1000).getMinutes()/100), new Date(obj.daily[3].sunrise * 1000).getHours() + (new Date(obj.daily[3].sunrise * 1000).getMinutes()/100),
+        new Date(obj.daily[4].sunrise * 1000).getHours() + (new Date(obj.daily[4].sunrise * 1000).getMinutes()/100),new Date(obj.daily[5].sunrise * 1000).getHours() + (new Date(obj.daily[5].sunrise * 1000).getMinutes()/100),
+        new Date(obj.daily[6].sunrise * 1000).getHours() + (new Date(obj.daily[6].sunrise * 1000).getMinutes()/100),new Date(obj.daily[7].sunrise * 1000).getHours() + (new Date(obj.daily[7].sunrise * 1000).getMinutes()/100),
+        ],
+        borderColor: "gold",
+        label: "Sunrise",
+        fill: false
+      }, { 
+      data: [new Date(obj.daily[0].sunset * 1000).getHours() + (new Date(obj.daily[0].sunset * 1000).getMinutes()/100), new Date(obj.daily[1].sunset * 1000).getHours() + (new Date(obj.daily[1].sunset * 1000).getMinutes()/100),
+        new Date(obj.daily[2].sunset * 1000).getHours() + (new Date(obj.daily[2].sunset * 1000).getMinutes()/100), new Date(obj.daily[3].sunset * 1000).getHours() + (new Date(obj.daily[3].sunset * 1000).getMinutes()/100),
+        new Date(obj.daily[4].sunset * 1000).getHours() + (new Date(obj.daily[4].sunset * 1000).getMinutes()/100),new Date(obj.daily[5].sunset * 1000).getHours() + (new Date(obj.daily[5].sunset * 1000).getMinutes()/100),
+        new Date(obj.daily[6].sunset * 1000).getHours() + (new Date(obj.daily[6].sunset * 1000).getMinutes()/100),new Date(obj.daily[7].sunset * 1000).getHours() + (new Date(obj.daily[7].sunset * 1000).getMinutes()/100),
+        ],
+        borderColor: "pink",
+        label: "Sunset",
+        fill: false
+      } ,  { 
+        data: [new Date(obj.daily[0].moonrise * 1000).getHours() + (new Date(obj.daily[0].moonrise * 1000).getMinutes()/100), new Date(obj.daily[1].moonrise * 1000).getHours() + (new Date(obj.daily[1].moonrise * 1000).getMinutes()/100),
+        new Date(obj.daily[2].moonrise * 1000).getHours() + (new Date(obj.daily[2].moonrise * 1000).getMinutes()/100), new Date(obj.daily[3].moonrise * 1000).getHours() + (new Date(obj.daily[3].moonrise * 1000).getMinutes()/100),
+        new Date(obj.daily[4].moonrise * 1000).getHours() + (new Date(obj.daily[4].moonrise * 1000).getMinutes()/100),new Date(obj.daily[5].moonrise * 1000).getHours() + (new Date(obj.daily[5].moonrise * 1000).getMinutes()/100),
+        new Date(obj.daily[6].moonrise * 1000).getHours() + (new Date(obj.daily[6].moonrise * 1000).getMinutes()/100),new Date(obj.daily[7].moonrise * 1000).getHours() + (new Date(obj.daily[7].moonrise * 1000).getMinutes()/100),
+        ],
+        borderColor: "blue",
+        label: "Moonrise",
+        fill: false
+      }, { 
+        data: [new Date(obj.daily[0].moonset * 1000).getHours() + (new Date(obj.daily[0].moonset * 1000).getMinutes()/100), new Date(obj.daily[1].moonset * 1000).getHours() + (new Date(obj.daily[1].moonset * 1000).getMinutes()/100),
+        new Date(obj.daily[2].moonset * 1000).getHours() + (new Date(obj.daily[2].moonset * 1000).getMinutes()/100), new Date(obj.daily[3].moonset * 1000).getHours() + (new Date(obj.daily[3].moonset * 1000).getMinutes()/100),
+        new Date(obj.daily[4].moonset * 1000).getHours() + (new Date(obj.daily[4].moonset * 1000).getMinutes()/100),new Date(obj.daily[5].moonset * 1000).getHours() + (new Date(obj.daily[5].moonset * 1000).getMinutes()/100),
+        new Date(obj.daily[6].moonset * 1000).getHours() + (new Date(obj.daily[6].moonset * 1000).getMinutes()/100),new Date(obj.daily[7].moonset * 1000).getHours() + (new Date(obj.daily[7].moonset * 1000).getMinutes()/100),
+        ],
+        borderColor: "green",
+        label: "Moonset",
+        fill: false
+      }, { 
+        data: [obj.daily[0].moon_phase*10,obj.daily[1].moon_phase*10,obj.daily[2].moon_phase*10,obj.daily[3].moon_phase*10,obj.daily[4].moon_phase*10,obj.daily[5].moon_phase*10,obj.daily[6].moon_phase*10,obj.daily[7].moon_phase*10],
+        borderColor: "grey",
+        label: "MoonPhase /10",
+        fill: false
+      }
+  ]
+  },
+  options: {
+    legend: {display: true},
+    title: {display: true, text: "Planetary"}
+  }
+});
+
+}
+    </script>
+    </body>
+        </html>
